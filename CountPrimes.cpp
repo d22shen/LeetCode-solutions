@@ -8,8 +8,10 @@
 class Solution {
 public:
     int countPrimes(int n) {
+        //不赋初值(2,true),如何按自定的index插值？
         vector<bool> isPrime(2,true);
         for(int i=2;i<n;i++){
+            //只能push_back，不能"="?
             isPrime.push_back(true);
         }
         for(int i=2;i*i<n;i++){
