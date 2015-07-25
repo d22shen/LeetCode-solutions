@@ -1,3 +1,6 @@
+//aha
+//what I learned
+//simplest solution but not the best
 class Solution {
 public:
     int hammingWeight(uint32_t n) {
