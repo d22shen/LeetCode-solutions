@@ -23,6 +23,8 @@ public:
             }
         }
         if(temp1.empty()||temp2.empty()) return true;
+        //here, the size of the vector is no longer s.size() but the temp1.size()
+        //because the unrelated characters are excluded
         for(int i = 0;i<temp1.size();i++){
             if(temp1[i]!=temp2[i]) {
                 return false;
