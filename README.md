@@ -1,7 +1,7 @@
 # Impala UDF&UDAF
 
 
-## Deployment
+## UDF Setup on HDFS
 
 ```bash
 # 1. Obtain .so file and sql script through svn or git
