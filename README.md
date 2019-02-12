@@ -1,7 +1,7 @@
 # Impala UDF&UDAF
 
 
-## UDF Setup on HDFS
+## Deploy UDF on HDFS
 
 ```bash
 # 1. Obtain .so file and sql script through svn or git
@@ -20,10 +20,9 @@ impala-shell -p udf_fazbd_cpp.sql
 
 # 6. Use the db_public_kudu database and try the UDFs with some sql queries
 use db_public_kudu;
-
 ```
 
-## Install UDF Development Env
+## Install UDF Development Env on CentOS
 
 ```bash
 # 1. Install cmake and gcc
@@ -38,11 +37,14 @@ sudo yum-config-manager --enable cloudera-cdh5
 
 # 3. Install impala UDF development environment
 sudo yum install impala-udf-devel
+```
 
-# 4. Change directory into udf source code and build .so file
+## Compile source code for .so file
+
+```bash
+# 1. Change directory into udf source code and build .so file
 cmake . && make
 
-# 5. Browse the so file under build folder
+# 2. Browse the so file under build folder
 ls build/*.so
-
 ```
