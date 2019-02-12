@@ -22,3 +22,27 @@ impala-shell -p udf_fazbd_cpp.sql
 use db_public_kudu;
 
 ```
+
+## Install UDF Development Env
+
+```bash
+# 1. Install cmake and gcc
+sudo yum install gcc-c++ cmake boost-devel
+
+# 2. Install CDH repo
+sudo yum -y install yum-utils
+
+sudo yum-config-manager --add-repo http://archive.cloudera.com/cdh5/redhat/7/x86_64/cdh/cloudera-cdh5.repo
+
+sudo yum-config-manager --enable cloudera-cdh5
+
+# 3. Install impala UDF development environment
+sudo yum install impala-udf-devel
+
+# 4. Change directory into udf source code and build .so file
+cmake . && make
+
+# 5. Browse the so file under build folder
+ls build/*.so
+
+```
