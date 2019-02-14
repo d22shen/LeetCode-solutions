@@ -73,7 +73,7 @@ ls src/main/c/build/*.so
 
 ## limitations
 
-FAZ's UDFs are for Postgres Database. Postgres supports abundant built-in data types and customized data type, but Impala does not support them. Hence, we have to use string to support these complex data types. For example, we have to use string to represent int4range, array, fct_uuid, inet and use int or double to represent smallint or numeric in Postgres DB.
+FAZ's UDFs are for Postgres Database. Postgres supports abundant built-in data types and customized data type, but Impala does not support them. Hence, we have to use string to support these complex data types. For example, we have to use string to represent int4range, array, fct_uuid, inet and use int or double to represent smallint or numeric. 
 
 ## UDFs
 
@@ -123,6 +123,42 @@ FAZ's UDFs are for Postgres Database. Postgres supports abundant built-in data t
 4. root_domain(string arg1) returns string
     arg1: hostname string
     return: domain name
+    test case 1 most cases like 'www.fortinet.com':
+        query: select root_domain('www.fortinet.com');
+        result: 'fortinet.com' (last two sections are kept as domain name)
+    test case 2 special cases like 'www.sina.com.cn':
+        query: select root_domain('www.sina.com.cn');
+        result: 'sina.com.cn' (last two sections will be checked if they both are in top domain list then kept one more section in the domain name)
+    test case 3 ip address:
+        query: select root_domain('2002:cc:ef::16');
+        result: '2002:cc:ef::16' (the whole address is returned as domain name)
+    test case 4 special case ip address with square brackets and port number:
+        query: select root_domain('https://[2002:cc:ef::16]:443/');
+        result: '2002:cc:ef::16' (only the ip part is kept)
+    test case 5 special case like 'www.am.com':
+        query: select root_domain('www.am.com');
+        result: 'am.com' (both "am" and "com" are in top domain map, but "am" here is not a top domain should be kept)
+    test case 6 special case like 'www.abc.am.com':
+        query: select root_domain('www.abc.am.com');
+        result: 'abc.am.com'
+    known issue: test case 2 succeeds by chance because the helper function 'lookup_domain_info' is not implemented yet.
+        'lookup_domain_info' is to check whether some domain is in top domain list. FAZBD should also have this helper function.
+
+5. nullifna(string arg1) returns string
+    arg1: string
+    return: string
+    test case 1 string with is not 'N/A' or 'n/a'
+        query: select nullifna('aaaaa');
+        result: 'aaaaa'
+    test case 2 'N/A':
+        query: select nullifna('N/A');
+        result: NULL
+    test case 2 'n/a':
+        query: select nullifna('n/a');
+        result: NULL
+
+
+
 
 ```
 
