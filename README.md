@@ -69,12 +69,31 @@ mvn package -Dmaven.test.skip=true
 ls src/main/c/build/*.so
 ```
 
+# UDF&UDAF Spec and Test Cases
+
+## limitations
+
+FAZ's UDFs are for Postgres Database. Postgres supports abundant built-in data types and customized data type, but Impala does not support them. Hence, we have to use string to support these complex data types. For example, we have to use string to represent int4range, array, fct_uuid, inet and use int or double to represent smallint or numeric in Postgres DB.
+
 ## UDFs
 
 ```bash
-1. threatweight_sum()
+1. threatweight_sum(string arg1, string arg2) returns int
+   arg1: threatweights that is int array like '{1,1,1,1,1}'
+   arg2: threatcounts that is int array like '{1,2,3,4,5}'
+   return: sum of (threatweight*threatcount) like 1*1+1*2+1*3+1*4+1*5 = 15
+   limitations:
+      1. arg1 and arg2 should be arrays with same number of elements. Otherwise, zero would be returned.
 
-2. threatweight_level_sum()
+2. threatweight_level_sum(int arg1, string arg2, string arg3, string arg4)
+   arg1: threatlevel that is int like 1
+   arg2: threatlevels that is int array like '{1,2,3,4,1}'
+   arg3: threatcounts that is int array like '{1,2,3,4,5}'
+   arg4: threatweights that is int array like '{1,1,1,1,1}'
+   return: sum of (threatweight*threatcount) for input threatlevel like 1*1+1*5=6 when input threatlevel is 1
+   limittations:
+      1. arg1, arg2 and arg3 should be arrays with same number of elements. Otherwise, zero would be returned.
+      2. threatlevel range from 1 to 4 inclusive
 
 3. threatlevel_max()
 ```
