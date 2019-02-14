@@ -141,7 +141,7 @@ FAZ's UDFs are for Postgres Database. Postgres supports abundant built-in data t
     test case 6 special case like 'www.abc.am.com':
         query: select root_domain('www.abc.am.com');
         result: 'abc.am.com' (both "am" and "com" are in top domain map, but "am" here is a top domain should be kept as well)
-    known issue: test case 2 succeeds by chance because the helper function 'lookup_domain_info' is not implemented yet.
+    TODO issue: test case 2 succeeds by chance because the helper function 'lookup_domain_info' is not implemented yet.
         'lookup_domain_info' is to check whether some domain is in top domain list. FAZBD should also have this helper function.
 
 5. nullifna(string arg1) returns string
@@ -246,6 +246,142 @@ FAZ's UDFs are for Postgres Database. Postgres supports abundant built-in data t
     test case 1 input of zero:
         query: select tmtohour(0);
         result: '1970-01-01 08:00' (local timezone may affect this value)
+
+15. logid_to_int(string arg1) returns int
+    arg1: logid string
+    return: cast the ending 6 digits to int
+    test case 1 valid logid:
+        query: select logid_to_int('0001000014');
+        result: 14
+    test case 2 invalid logid:
+        query: select logid_to_int('0014');
+        result: 14 (follow FAZ design)
+
+16. bigint_array_sum(string arg1) returns bigint
+    arg1: bigint array
+    return: sum of the bigint array elements
+    test case 1 valid bigint array:
+        query: select bigint_array_sum('{1000000000000,200000000000,300000000000,4000000000000,5000000000000}');
+        result: 10500000000000
+    test case 2 bigint max overflow:
+        query: select bigint_array_sum('{9223372036854775807,1}');
+        result: "-9223372036854775808" (same with FAZ)
+    test case 3 negative value:
+        query: select bigint_array_sum('{-1000000000000,200000000000,300000000000,-4000000000000,5000000000000}');
+        result: 500000000000
+    test case 4 bigint min overflow:
+        query: select bigint_array_sum('{-9223372036854775808,-1}');
+        result: 9223372036854775807 (same with FAZ)
+
+17. string_position(string arg1, string arg2) returns int
+    arg1: string
+    arg2: string
+    return: first occurence of arg1 in arg2 (index starts from 1 while 0 means not found)
+    test case 1 found:
+        query: select string_position('add', 'addiii');
+        result: 1
+    test case 2 not found:
+        query: select string_position('add', 'adiiii');
+        result: 0
+
+18. file_name_ext(string arg1) returns string
+    arg1: file name with type suffix separated with '.'
+    return: file type suffix
+    test case 1 valid file name with single suffix:
+        query: select file_name_ext('readme.md');
+        result: 'md'
+    test case 2 file name without suffix
+        query: select file_name_ext('readme');
+        result: NULL
+    test case 3 file name with multiple suffix
+        query: select file_name_ext('readme.txt.md');
+        result: 'md' (return last suffix)
+
+19. ipstr(string arg1) returns string
+    arg1: inet string with or without subnet mask bits number
+    return: the ip part of the inet string input
+    limitations: inet type validation check is not implemented.
+    test case 1 valid ip input:
+        query: select ipstr('192.168.6.108');
+        result: '192.168.6.108'
+    test case 2 invalid ip input:
+        query: select ipstr('192.168.6.256');
+        result: NULL (different from FAZ since postgres will check inet data type automatically)
+    test case 3 valid inet input with mask:
+        query: select ipstr('192.168.31/24');
+        result: '192.168.31.0'
+    TODO issue: inet data type should be checked considering the ip part and the subnet mask. ipv6 should be also considered.
+
+20. ip_subnet(string arg1) returns string
+    arg1: inet string with or without subnet mask bits number
+    return: ip subnet string
+    TODO issue: just find this does not work for now. The algorithm is kind of complex.
+
+21. vpn_trim(string arg1) returns string
+    arg1: vpn string
+    return: trim vpn string with regex '_[0-9]+$'
+    test case 1 vpn string match the regex:
+        query: select vpn_trim('aaaa_11111');
+        result: 'aaaa'
+    test case 2 vpn string not match regex:
+        query: select vpn_trim('aaaa11111');
+        result: 'aaaa11111'
+
+22. fctver_trim(string arg1) returns string
+    arg1: forticlient version string
+    return: trim fctver string with regex '^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}'
+    test case 1 valid input match the regex:
+        query: select fctver_trim('111.111.11111111');
+        result: '111.111.111'
+    test case 2 invalid input that does not match the regex:
+        query: select fctver_trim('11111.111.11111111');
+        result: NULL
+
+23. format_numeric_no_decimal(string arg1) returns string
+    arg1: numeric string that is designed to be decimal(28,2)
+    return: round the numeric number and return only the integer part
+    test case 1 normal case:
+        query: select format_numeric_no_decimal('55555.55');
+        result: '55556'
+    test case 2 negative input:
+        query: select format_numeric_no_decimal('-55555.55');
+        result: '-55556'
+    test cases to be added including input overflow etc.
+    TODO issue: numeric should be decimal(28,2) but for now our numeric can only support number less than 20 digits including signs
+
+24. to_string(anyelement arg1) returns string
+    arg1: input can be of int, bigint, smallint, string, boolean, float, double, timestamp data types
+    return: cast input as string
+    test case 1 input is int:
+        query: select to_string(cast(111 as int));
+        result: '111'
+    test case 2 input is bigint:
+        query: select to_string(cast(111 as bigint));
+        result: '111'
+    test case 3 input is smallint:
+        query: select to_string(cast(111 as smallint));
+        result: '111'
+    test case 4 input is string:
+        query: select to_string('I am a string!');
+        result: 'I am a string!'
+    test case 5 input is boolean:
+        query: select to_string(cast(0 as boolean));
+        result: 'false'
+    test case 6 input is float:
+        query: select to_string(cast(111.11 as float));
+        result: '111.11'
+    test case 7 input is double:
+        query: select to_string(cast(111.11 as double));
+        result: '111.11'
+    test case 8 input is timestamp:
+        query: select to_string(cast('1970-01-01 00:00:00.0000' as timestamp));
+        result: '1970-01-01 00:00:00'
+
+
+
+
+
+
 
 
 
