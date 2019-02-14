@@ -196,15 +196,61 @@ FAZ's UDFs are for Postgres Database. Postgres supports abundant built-in data t
         query: select from_itime(0);
         result: '1970-01-01 08:00:00' (FAZ and FAZBD local time zone will affect this value)
 
-9. from_dtime(bigint) returns string
+9. from_dtime(bigint arg1) returns string
     arg1: dtime bigint (UTC calculated by FAZ using 'date' and 'time' fields received from the Fortigate)
     return: date time string in GMT timezone
     limitations:
         1. It is not GMT time in fact, so there are timezone differences between dtime and real unix timestamp
         2. FAZ uses this method to avoid time zone issue for date time string value
+    test case 1 input of zero:
+        query: select from_dtime(0);
+        result: '1970-01-01 00:00:00' (Epoch Start Date Time)
 
-10. email_user(string) returns string
-    arg1: 
+10. email_user(string arg1) returns string
+    arg1: email address string
+    return: email user string
+    test case 1 valid email address with '@':
+        query: select email_user('dsshen@fortinet.com');
+        result: 'dsshen' (token before '@')
+    test case 2 invalid email address without '@':
+        query: select email_user('dsshenfortinet.com');
+        result: 'dsshenfortinet.com'
+
+11. email_domain(string arg1) returns string
+    arg1: email address string
+    return: domain of the email address
+    test case 1 valid email address with '@':
+        query: select email_domain('dsshen@fortinet.com');
+        result: 'fortinet.com' (token after '@')
+    test case 2 invalid email address without '@':
+        query: select email_domain('dsshenfortinet.com');
+        result: empty output
+
+12. date_time(bigint arg1) returns string
+    arg1: UTC bigint
+    return: human readable month/day/hour/minute string in local timezone in 'MM/DD hh24:mi' format
+    test case 1 input of zero:
+        query: select date_time(0);
+        result: '01/01 08:00' (local timezone may affect this value)
+
+13. tmtodate(bigint arg1) returns string
+    arg1: UTC bigint
+    return: human readable year/month/day string in local timezone in 'YYYY-MM-DD' format
+    test case 1 input of zero:
+        query: select tmtodate(0);
+        result: '1970-01-01' (local timezone may affect this value)
+
+14. tmtohour(bigint arg1) returns string
+    arg1: UTC bigint
+    return: human readable year/month/day/hour string in local timezone in 'YYYY-MM-DD HH24:00' format
+    test case 1 input of zero:
+        query: select tmtohour(0);
+        result: '1970-01-01 08:00' (local timezone may affect this value)
+
+
+
+
+
 
 ```
 
