@@ -71,17 +71,20 @@ ls src/main/c/build/*.so
 
 ## UDFs
 
+```bash
 #### threatweight_sum()
 
 #### threatweight_level_sum()
 
 #### threatlevel_max()
-
+```
 
 ## UDAs
 
+```bash
 #### array_agg()
 
 #### ebtr_agg_flat()
 
 #### loguids_agg()
+```
