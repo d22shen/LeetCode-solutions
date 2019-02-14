@@ -79,23 +79,51 @@ FAZ's UDFs are for Postgres Database. Postgres supports abundant built-in data t
 
 ```bash
 1. threatweight_sum(string arg1, string arg2) returns int
-   arg1: threatweights that is int array like '{1,1,1,1,1}'
-   arg2: threatcounts that is int array like '{1,2,3,4,5}'
-   return: sum of (threatweight*threatcount) like 1*1+1*2+1*3+1*4+1*5 = 15
-   limitations:
-      1. arg1 and arg2 should be arrays with same number of elements. Otherwise, zero would be returned.
+    arg1: threatweights array
+    arg2: threatcounts array
+    return: sum (threatweight*threatcount)
+    limitations:
+        1. arg1 and arg2 should be arrays with same number of elements. Otherwise, zero would be returned.
+    test case 1 arrays with same number of elements:
+        query: select threatweight_sum('{1,1,1,1,1}', '{1,2,3,4,5}');
+        result: 15 (1*1+1*2+1*3+1*4+1*5)
+    test case 2 arrays with different number of elements:
+        query: select threatweight_sum('{1,1,1,1,1}', '{1,2,3,4}');
+        result: 0
 
-2. threatweight_level_sum(int arg1, string arg2, string arg3, string arg4)
-   arg1: threatlevel that is int like 1
-   arg2: threatlevels that is int array like '{1,2,3,4,1}'
-   arg3: threatcounts that is int array like '{1,2,3,4,5}'
-   arg4: threatweights that is int array like '{1,1,1,1,1}'
-   return: sum of (threatweight*threatcount) for input threatlevel like 1*1+1*5=6 when input threatlevel is 1
-   limittations:
-      1. arg1, arg2 and arg3 should be arrays with same number of elements. Otherwise, zero would be returned.
-      2. threatlevel range from 1 to 4 inclusive
+2. threatweight_level_sum(int arg1, string arg2, string arg3, string arg4) returns int
+    arg1: threatlevel (4(cri), 3(hi), 2(med), 1(low))
+    arg2: threatlevels array
+    arg3: threatcounts array
+    arg4: threatweights array
+    return: sum of (threatweight*threatcount) of input threatlevel
+    limittations:
+        1. arg1, arg2 and arg3 should be arrays with same number of elements. Otherwise, zero would be returned.
+        2. threatlevel range from 1 to 4 inclusive
+    test case 1 arrays with same number of elements:
+        query: select threatweight_level_sum(1, '{1,2,3,4,1}', '{1,2,3,4,5}', '{1,1,1,1,1}');
+        result: 6 (1*1+1*5=6 when input threatlevel is 1)
+    test case 2 arrays with different number of elements:
+        query: select threatweight_level_sum(1, '{1,2,3,4,1}', '{1,2,3,4,5}', '{1,1,1}');
+        result: 0
+    test case 3 arrays with threatlevel out of range:
+        query: select threatweight_level_sum(6, '{6,6,6,6,6}', '{1,2,3,4,5}', '{1,1,1,1,1}');
+        result: 0
 
-3. threatlevel_max()
+3. threatlevel_max(string arg1) returns int
+    arg1: threatlevels array
+    return: max threatlevel in the input threatlevels array
+    test case 1 threatlevels within range:
+        query: select threatlevel_max('{1,2,3,4,1}');
+        result: 4
+    test case 2 threatlevels out of range:
+        query: select threatlevel_max('{1,2,3,4,1111}');
+        result: 1111 (not reasonable but follow faz design)
+
+4. root_domain(string arg1) returns string
+    arg1: hostname string
+    return: domain name
+
 ```
 
 ## UDAs
