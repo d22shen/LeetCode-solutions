@@ -300,7 +300,8 @@ FAZ's UDFs are for Postgres Database. Postgres supports abundant built-in data t
 19. ipstr(string arg1) returns string
     arg1: inet string with or without subnet mask bits number
     return: the ip part of the inet string input
-    limitations: inet type validation check is not implemented.
+    limitations:
+        1. inet type validation check is not implemented.
     test case 1 valid ip input:
         query: select ipstr('192.168.6.108');
         result: '192.168.6.108'
@@ -377,16 +378,108 @@ FAZ's UDFs are for Postgres Database. Postgres supports abundant built-in data t
         query: select to_string(cast('1970-01-01 00:00:00.0000' as timestamp));
         result: '1970-01-01 00:00:00'
 
+25. bandwidth_unit(string arg1) returns string
+    arg1: input is numeric string indicating bandwidth in bytes
+    return: transform bytes to GB, MB and KB according to the input
+    test case 1 input is GB level:
+        query: select bandwidth_unit('1073741824');
+        result: '1.00GB'
+    test case 2 input is MB level:
+        query: select bandwidth_unit('1048576');
+        result: '1.00MB'
+    test case 3 input is KB level:
+        query: select bandwidth_unit('1024');
+        result: '1.00KB'
+    test case 4 input is less than 1KB:
+        query: select bandwidth_unit('1023');
+        result: '1023.00'
+
+26. fv_timescale_func(bigint arg1, int arg2, int arg3) returns bigint
+    arg1: bigint
+    arg2: int
+    arg3: int
+    return: result of ((arg1 + arg3)/arg2 * arg2 - arg3)
+    limitations:
+        1. use case of this function is not quite clear
+    test case 1:
+        query: select fv_timescale_func(100, 2, 3);
+        result: 99
+
+27. virusid_to_str(bigint arg1, string arg2) returns string
+    arg1: virusid bigint
+    arg2: botnet prefix
+    return: virusid string if arg2 is not botnet; otherwise, botnet:virusid
+    test case 1 input with botnet prefix
+        query: select virusid_to_str(1000000,'botnet');
+        result: 'botnet:1000000'
+    test case 2 input with 'other' prefix:
+        query: select virusid_to_str(1000000,'haha');
+        result: 'haha:1000000'
+    test case 3 input with no prefix:
+        query: select virusid_to_str(1000000,'');
+        result: '1000000'
+
+28. extract_epoch(string arg1) returns bigint
+    arg1: timestamp string or date time string
+    return: epoch calculated with the time part of arg1
+    test case 1 valid date time string:
+        query: select extract_epoch('1970-01-01 00:00:00.0000');
+        result: 0
+    test case 2 valid time string:
+        query: select extract_epoch('10:00:00.0000');
+        result: 36000
+    test case 3 no time string:
+        query: select extract_epoch('1970-01-01');
+        result: NULL
+
+29. fctos_to_devtype(string arg1) returns string
+    arg1: forticlient OS string
+    return: device type generated from from arg1
+    limitations:
+        1. valid fct os is hard-coded including 'Windows', 'Mac', 'iPad OS', 'iPhone OS', 'iPod OS', 'Android Phone', and 'Android Tablet'
+    test case 1 predefined fctos:
+        query: select fctos_to_devtype('Microsoft Windows 7 Enterprise Edition, 32-bit Service Pack 1 (build 7601)');
+        result: 'Windows PC'
+    test case 2 unknown fctos:
+        query: select fctos_to_devtype('Fortinet Winwin 7 Enterprise Edition, 32-bit Service Pack 1 (build 7601)');
+        result: 'Unknown'
 
 
+30. normalize_url(string arg1, string arg2, string arg3) returns string
+    arg1: protocol string
+    arg2: hostname string
+    arg3: path string
+    arg4: dstport string (to be added)
+    arg5: tdtype string (to be added)
+    return: a formated url generated from the inputs
+    test case 1:
+        query: select normalize_url('HTTPS', 'wiki.fortinet.com', '/twiki/bin/login/Main/OrderDinner?origurl=%2Ftwiki%2Fbin%2Fview%2FMain%2FOrderDinner');
+        expected return: 'https://wiki.fortinet.com/twiki/bin/login/Main/OrderDinner'
+    TODO issue: Not work at all.
 
+31. ebtr_value(string arg1, int arg2, int arg3) returns int
+    arg1: estimated browsing time range (ebtr) int4range array
+    arg2: lower limit of the time4range elements
+    arg3: upper limit of the time4range elements
+    return: the ebtr value generated from the time4range array
+    test case 1:
+        query: 
 
+32. fct_uuid_lt(string arg1, string arg2) returns boolean
 
+33. fct_uuid_le(string arg1, string arg2) returns boolean
 
+34. fct_uuid_eq(string arg1, string arg2) returns boolean
 
+35. fct_uuid_ge(string arg1, string arg2) returns boolean
 
+36. fct_uuid_gt(string arg1, string arg2) returns boolean
 
+37. fct_uuid_ne(string arg1, string arg2) returns boolean
 
+38. fct_uuid_cmp(string arg1, string arg2) returns int
+
+39. fct_uuid_hash(string arg1) returns int
 
 ```
 
