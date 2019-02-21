@@ -1,7 +1,9 @@
 # common.dao
 
+```
 common.dao is a Rooster project that provides a generic JDBC DAO with implementation to support Impala.
 Please refer to test for example usage.
+```
 
 
 
