@@ -32,17 +32,34 @@ docker-compose down
 
 ```
 
-## Kafka producer (run junit test)
-All commands below should be run when both kafka and model data etl are up.
+## Create test tables in Impala&Kudu database
+
+```sql
+# create test database "public" and test table "devtable" in impala-shell
+CREATE DATABASE IF NOT EXISTS public;
+
+DROP TABLE IF EXISTS public.devtable;
+CREATE TABLE public.devtable (
+    dvid integer NOT NULL,
+    devid string NOT NULL,
+    vd string,
+    csf string,
+    devname string,
+    ctime integer DEFAULT 0 NOT NULL,
+    lastseen integer DEFAULT 0 NOT NULL,
+    primary key (dvid)
+) PARTITION BY HASH(dvid) PARTITIONS 2 STORED AS KUDU;
+
+```
+
+## Kafka producer (run functional test)
+All commands below should be run when both kafka and model data etl are running.
 
 ```bash
-1. Send 20 create records
-mvn -Dtest=com.fortidata.model.data.etl.test.producer.BatchOpsProducerApp#testCreate test
+# update "test_producer.properties" (model.data.etl/src/main/test/resources)
+bootstrap.servers=localhost:9092 (change to your own IP)
+topic=model_data (change to your own topic name)
 
-2. Update the sent 20 records
-mvn -Dtest=com.fortidata.model.data.etl.test.producer.BatchOpsProducerApp#testUpdate test
-
-3. Delete the updated 20 records
-mvn -Dtest=com.fortidata.model.data.etl.test.producer.BatchOpsProducerApp#testDelete test
+# run the test functions in BatchOpsProducerApp.java (model.data.etl/src/main/test/producer)
 
 ```
