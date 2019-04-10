@@ -15,40 +15,53 @@ modeldata.datasource.hikari.jdbc-url=<impala_url>
 ```
 
 ## Start kafka and model data etl
-**kafka docker + model data etl on host**
-
 All commands below should be run under the project root (model.data.etl/)
+
+## Option 1
+**All (kafka + model data etl) in docker compose**
+
+Make sure you have aws cli preinstalled
+aws default region is us-west-1, default output is None
+
+```bash
+# 1. Setup env
+aws configure
+eval $(aws ecr get-login --no-include-email | sed 's|https://||')
+
+# 2. Build project and images
+mvn clean install
+
+# 3. Start all
+docker-compose up --build
+
+# 4. Stop all
+docker-compose down
+
+```
+
+## Option 2
+**kafka docker + model data etl on host**
 
 ```bash
 # build latest
 mvn clean install
 
-# start all
+# start kafka and zookeeper
 docker-compose -f docker-compose-kafka_only.yml up -d
+
+# start model data etl
 java -jar target/com.fortidata.model.data.etl-0.0.1-SNAPSHOT.jar
 
-# stop kafka
+# stop kafka and zookeeper
 docker-compose down
 
 ```
 
 ## Create test tables in Impala&Kudu database
 
-```sql
-# create test database "public" and test table "devtable" in impala-shell
-CREATE DATABASE IF NOT EXISTS public;
-
-DROP TABLE IF EXISTS public.devtable;
-CREATE TABLE public.devtable (
-    dvid integer NOT NULL,
-    devid string NOT NULL,
-    vd string,
-    csf string,
-    devname string,
-    ctime integer DEFAULT 0 NOT NULL,
-    lastseen integer DEFAULT 0 NOT NULL,
-    primary key (dvid)
-) PARTITION BY HASH(dvid) PARTITIONS 2 STORED AS KUDU;
+```bash
+# locate "src/test/resources/createTables.sql" and use impala-shell to create the tables
+impala-shell -f createTables.sql
 
 ```
 
@@ -57,9 +70,11 @@ All commands below should be run when both kafka and model data etl are running.
 
 ```bash
 # update "test_producer.properties" (model.data.etl/src/main/test/resources)
-bootstrap.servers=localhost:9092 (change to your own IP)
+bootstrap.servers=localhost:9092 (change to your own IP and port)
 topic=model_data (change to your own topic name)
 
 # run the test functions in BatchOpsProducerApp.java (model.data.etl/src/main/test/producer)
+# or run with maven under root directory as follows
+mvn -Dtest=com.fortidata.model.data.etl.test.producer.BatchOpsProducerApp#testCreate test
 
 ```
