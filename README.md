@@ -91,7 +91,7 @@ CREATE TABLE public.app_mdata (
 ```
 
 ## Test Cases
-We use junit test and simulator to send requests. Not sure whether QA can use the same way to send requests or you have other ways to do this.
+We use junit test and simulator to send requests. Not sure whether QA can use the same way to send requests or QA has other tools to achieve this. We can have a discusstion on how to send these requests.
 
 ```bash
 # 1. Send good "Create" batch operations to ingestion server
