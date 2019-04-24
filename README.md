@@ -1,13 +1,17 @@
 # Model Data ETL Test
 ## Environment Setup
 
-```bash
-1.1 docker & docker-compose (if you have access to the source code)
-We use docker to do the test. The easiest way is to follow the README doc to start the Ingestion Server, Model Data ETL and Impala-Kudu together using docker-compose.
+## Option 1
+Use docker & docker-compose if you have access to the source code. Please follow the README doc of model.data.etl project to start the Ingestion Server, Model Data ETL and Impala-Kudu together using docker-compose.
 
+```bash
 # Change directory to /model.data.etl if you have all source code
-## Install docker, docker-compose and maven first on centos
-## Use maven to compile
+cd model.data.etl
+
+# Install docker, docker-compose and maven first on centos
+## follow this doc to install: https://blog.csdn.net/yedongfeng_1314/article/details/82555588
+
+# Use maven to compile
 mvn clean install
 
 ## Start ingestion server, model data etl, and impala-kudu with docker
@@ -15,13 +19,24 @@ docker-compose up
 
 ## Stop all
 docker-compose down
+```
 
-1.2	Setup Kafka, Zookeeper, Ingestion Server, and Model Data ETL on real PC
+## Option 2
+Deploy Kafka, Zookeeper, Ingestion Server, Model Data ETL on real PC
+I can provide all the necessary jars to get the installation done. In addition, I can help with the setup process of the ingestion server and model.data.etl if they fail to connect with each other with the default config. This process is kind of complex so docker usage would be appreciated.
+
+```bash
 # install and start Kafka and zookeeper
+follow Kafka official doc for installation
+
 # deploy and start ingestion server jar
+java -jar com.fortidata.ingestion.server-0.0.1-SNAPSHOT.jar
+
 # deploy and start model data etl jar
+java -jar com.fortidata.model.data.etl-0.0.1-SNAPSHOT.jar
+
 # install impala and kudu
-I can provide all the necessary jars to get the installation done. In addition, I can help with the setup process of the ingestion server and model.data.etl if they fail to connect with each other with the default config.
+follow CDH offical doc for installation
 ```
 
 ## DB Initialization (Create these test tables in the Kudu DB)
@@ -98,4 +113,6 @@ This should trigger retry consumer.
 
 (2) Send invalid sql queries will result in "java.sql.SQLException"
 This should trigger error consumer but not sure how to reproduce this.
+
+(3) To be added
 ```
