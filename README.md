@@ -14,10 +14,10 @@ cd model.data.etl
 # Use maven to compile
 mvn clean install
 
-## Start ingestion server, model data etl, and impala-kudu with docker
+# Start ingestion server, model data etl, and impala-kudu with docker
 docker-compose up
 
-## Stop all
+# Stop all
 docker-compose down
 ```
 
