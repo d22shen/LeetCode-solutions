@@ -27,7 +27,7 @@ I can provide all the necessary jars to get the installation done. In addition, 
 
 ```bash
 # install and start Kafka and zookeeper
-follow Kafka official doc for installation
+## follow Kafka official doc for installation
 
 # deploy and start ingestion server jar
 java -jar com.fortidata.ingestion.server-0.0.1-SNAPSHOT.jar
@@ -36,7 +36,7 @@ java -jar com.fortidata.ingestion.server-0.0.1-SNAPSHOT.jar
 java -jar com.fortidata.model.data.etl-0.0.1-SNAPSHOT.jar
 
 # install impala and kudu
-follow CDH offical doc for installation
+## follow CDH offical doc for installation
 ```
 
 ## DB Initialization (Create these test tables in the Kudu DB)
@@ -90,29 +90,29 @@ CREATE TABLE public.app_mdata (
 ) PARTITION BY HASH PARTITIONS 16 STORED AS KUDU TBLPROPERTIES('kudu.num_tablet_replicas' = '1');
 ```
 
-## Test Cases (Compare those in Kudu DB with expected results)
+## Test Cases
 We use junit test and simulator to send requests. Not sure whether QA can use the same way to send requests or you have other ways to do this.
 
 ```bash
-3.1	Send good "Create" batch operations to ingestion server
+# 1. Send good "Create" batch operations to ingestion server
 Insert some records into the Kudu DB and compare those in DB with expected results.
 
-3.2	Send good "Update" batch operations to ingestion server
+# 2. Send good "Update" batch operations to ingestion server
 Update some existing records and compare the updates with expected results.
 
-3.3	Send good "Delete" batch operations to ingestion server
+# 3. Send good "Delete" batch operations to ingestion server
 Delete specified records that already exist in DB and check whether those are deleted successfully.
 
-3.4 Send model data requests with bad batch operations
+# 4. Send model data requests with bad batch operations
 For example, send batch operation requests with unknown column name to a table. The records can be successfully inserted but with a null value rather than result in an insert failure.
 Another example might be update or delete non-existing records or create when record already exists or insert empty record, etc.
 
-3.5 Trigger retry consumer or error consumer with exceptions
-(1) Stop impala&kudu database will result in "java.net.ConnectException"
+# 5. Trigger retry consumer or error consumer with exceptions
+## 5.1 Stop impala&kudu database will result in "java.net.ConnectException"
 This should trigger retry consumer.
 
-(2) Send invalid sql queries will result in "java.sql.SQLException"
+## 5.2 Send invalid sql queries will result in "java.sql.SQLException"
 This should trigger error consumer but not sure how to reproduce this.
 
-(3) To be added
+## 5.3 To be added
 ```
