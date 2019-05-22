@@ -11,10 +11,8 @@
 echo "172.30.42.155 registry.fazbd.fortinet.com" >> /etc/hosts
 ```
 ### 1.3 Time Standard
-```bash
 All date time and timestamps mentioned in fazconnector and impala&kudu database adopt UTC time standard(GMT time) instead of local time zones.
 Date time should follow "yyyy-mm-dd hh:mm:ss.SSS" format.
-```
 
 #### Configuring your clients and projects to use FAZBD repos
 #### For Linux Docker 
