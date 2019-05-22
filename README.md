@@ -1,6 +1,6 @@
-# Development Guide for FAZ-BD Query API
+# Development Guide for FAZ-BD
 
-All date time and timestamps mentioned in fazconnector and impala&kudu database adopt UTC time standard(GMT time) instead of local time zones.
+All date time and timestamps mentioned in fazconnector and impala&kudu database adopt UTC time standard instead of local time zones.
 Date time should follow "yyyy-mm-dd hh:mm:ss.SSS" format.
 
 ## 1 Prerequisites
@@ -61,20 +61,26 @@ Then run this for test:
 docker pull registry.fazbd.fortinet.com:8083/hello-world:latest
 ```
 
-## 2 FAZ-BD Query Services Docker Container
+## 2 FAZ-BD Docker Container
 
 ### 2.1 Start Services 
 
-Docker images for the web services and its dependencies are provided with docker-compose-demo.yml which can be used for integration.
-Once it's up, an impala-demo container will load a set of demo data in to the embedded database (which will take about 2min)
-Then the the web services will be start with fazconnector container at `localhost:8080`. Server logs will be available via `docker logs {container_id}`
+Docker images for the web services and its dependencies are provided with docker-compose-simulator_etl_qa.yml which can be used for integration.
+It will start (simulator + ingestion server + kafka + etl + impala kudu + fazconnector) in docker compose. (It will take about several minutes)
+Then the the web services will start with fazconnector container at `localhost:8080`. Server logs will be available via `docker logs {container_id}`
 
 ```bash
 # start server
-docker-compose -f docker-compose-demo.yml up
+docker-compose -f docker-compose-simulator_etl_qa.yml up
+
+# 2.ext Sometimes, handle for etl "Exit(1)"
+# 2.ext.1 check all the contains up
+docker ps -a
+# 2.ext.2 if etl is the status of Exit(1), start etl again until it is up 
+docker-compose -f docker-compose-simulator_etl.yml up etl
 
 # stop server
-docker-compose -f docker-compose-demo.yml down
+docker-compose -f docker-compose-simulator_etl_qa.yml down
 docker volume rm $(docker volume ls -qf dangling=true)
 ```
 
@@ -183,7 +189,7 @@ Response body:
 adomName:adom1
 sql:
 select `id`,`itime`,`bid`,`dvid`,`dtime`,`type`,`subtype`,`level`,`action`,`utmaction`,`vd` 
-from ${fgt_traffic} where `itime` >= '2019-04-09 20:35:37' and `itime` <= '2019-04-18 20:45:37' order by `itime` desc
+from `db_log_public`.`adom1_fgt_traffic` where `itime` >= '2019-04-09 20:35:37' and `itime` <= '2019-04-18 20:45:37' order by `itime` desc
 
 Response Body:
 {
@@ -242,11 +248,11 @@ Response Body:
  * Adom name paramter is optional
  * For global table operation, just leave adom name as blank
  * For ADOM table operation, adom name must have value
-
+ 
 ```bash
 # /dbengine/execute
-# global
-keep adomName as blank
+## execute under global space
+adomName:keep adomName as blank
 sql:
 CREATE TABLE ${devtable} (
     dvid integer NOT NULL,
@@ -259,15 +265,7 @@ CREATE TABLE ${devtable} (
     primary key (dvid)
 )
 
-Response Body:
-{
-  "status": {
-    "code": 0
-  },
-  "result": 0
-}
-
-# adom
+## execute under specific adom
 adomName:adom1
 sql:
 CREATE TABLE ${devtable} (
