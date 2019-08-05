@@ -165,7 +165,7 @@ Response Body:
 # /v1/schedule
 param:
 {
-  "jobName": "data-maintenance-adomWan2", // get this jobName through step 5.2
+  "jobName": "data-maintenance-adomWan2",   # get this jobName through step 5.2
   "runtimeParams": {}
 }
 
@@ -183,7 +183,7 @@ Response Body:
 # /v1/jobs/{job_name}/unschedule
 param:
 {
-  "jobName": "data-maintenance-adomWan2", // the same jobName in step 5.3
+  "jobName": "data-maintenance-adomWan2",  # the same jobName in step 5.3
   "runtimeParams": {}
 }
 
