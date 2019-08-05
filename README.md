@@ -46,7 +46,7 @@ http://<IP>:8080/management/swagger-ui.html
 
 # Run management command to create new adom
 ```json
-# /v1/data/adoms'
+# /v1/data/adoms
 param:
 {
   "adomId": "adomWan2",
