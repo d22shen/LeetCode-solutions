@@ -1,7 +1,7 @@
-Create&shcedule a data retention/maintenance job (for dev purpose)
+# Create&shcedule a data retention/maintenance job (for dev purpose)
 
 # 1. Prerequisite
-We need an impala&kudu&datacatalog environment with default '_data_catalog' database that has the latest adom table schemas and UDFs deployed.
+We need an impala&kudu&datacatalog environment with default '_data_catalog' and 'db_log_public' databases that have the latest adom table schemas and UDFs.
 
 If you do not have the mentioned environment, we can create one.
 ## 1.1 fazudf (Reference fazudf README)
