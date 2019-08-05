@@ -112,6 +112,7 @@ http://<IP>:8081/task/swagger-ui.html
 ```
 
 ## 5.2 Run task command to list the newly created jobs
+Remember the jobName in the response. We will use them later.
 
 ```json
 # /v1/jobs
@@ -126,7 +127,7 @@ Response Body:
     "endTime": null,
     "cronExp": "0 0 1 1/1 * ? *",
     "scheduled": false,
-    "jobName": "data-retention-adomWan2", // new data retention jobName
+    "jobName": "data-retention-adomWan2",
     "jobType": "data-retention",
     "jobParams": {
       "unit": "day",
@@ -145,7 +146,7 @@ Response Body:
     "endTime": null,
     "cronExp": "0 */5 3 1/1 * ? *",
     "scheduled": false,
-    "jobName": "data-maintenance-adomWan2", // new data maintenance jobName
+    "jobName": "data-maintenance-adomWan2",
     "jobType": "data-maintenance",
     "jobParams": {
       "job_label": "adomWan2",
@@ -160,12 +161,13 @@ Response Body:
 ```
 
 ## 5.3 Run schedule command to list created jobs
+With the jobName in step 5.2, we can set the param here.
 
 ```json
 # /v1/schedule
 param:
 {
-  "jobName": "data-maintenance-adomWan2",   # get this jobName through step 5.2
+  "jobName": "data-maintenance-adomWan2",
   "runtimeParams": {}
 }
 
@@ -178,12 +180,13 @@ Response Body:
 ```
 
 ## 5.4 Run unschedule command to list created jobs
+Use the same jobName as that in step 5.3.
 
 ```json
 # /v1/jobs/{job_name}/unschedule
 param:
 {
-  "jobName": "data-maintenance-adomWan2",  # the same jobName in step 5.3
+  "jobName": "data-maintenance-adomWan2",
   "runtimeParams": {}
 }
 
