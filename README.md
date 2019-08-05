@@ -3,7 +3,7 @@
 # 1. Prerequisite
 We need an impala&kudu&datacatalog environment with default '_data_catalog' and 'db_log_public' databases that have the latest adom table schemas and UDFs.
 
-If you do not have the mentioned environment, we can create one.
+If you do not have the mentioned environment, we can create one through the following steps.
 ## 1.1 Compile fazudf (Reference fazudf README)
 Compile this C++ program first to generate the .so lib file.
 This file will be used by data.catalog or impala docker to deploy UDFs.
