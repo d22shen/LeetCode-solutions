@@ -24,13 +24,13 @@ https://docs.google.com/spreadsheets/d/153Cy__BD6K6toNyGmMWwkoLPahjySkcJ4EfEYuaO
 * You can call DataApi::createDataRetentionJob and DataApi::scheduleDataRetentionJob to start a data retention job
 * Job code is under bd.management.task project DataRetentionJobHandler.java
 
-## 5. Workflow to create retention&maintenance jobs
+## 5. Create retention&maintenance jobs
 
 ### 5.1 Access Task Web Page
 
 ```bash
 # db.management.api UI Page
-http://<IP>:8080/management/swagger-ui.html
+http://localhost:8080/management/swagger-ui.html
 ```
 
 ### 5.2 Run management command to create new adom (data retention&maintenance jobs are created for the new adom)
@@ -92,7 +92,7 @@ Response Body:
 
 ```bash
 # db.management.task UI Page
-http://<IP>:8081/task/swagger-ui.html
+http://localhost:8081/task/swagger-ui.html
 ```
 
 ### 6.2 Run task command to list the newly created jobs
