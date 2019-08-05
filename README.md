@@ -11,29 +11,29 @@ https://docs.google.com/spreadsheets/d/153Cy__BD6K6toNyGmMWwkoLPahjySkcJ4EfEYuaO
 
 ## 4. How to run
 
-### If you would like to work on api and task project
+### 4.1 If you would like to work on api and task project
 * Start docker compose file: ./demo/docker-compose-minidev.yml
 * Change bd.management.task port to 8081 in application.properties file ("server.port = 8081")
 * Change application.properties file in bd.management.api project: webclient.url.bd-task = localhost:8081
 * Start bd.management.task project
 * Start bd.management.api project
 
-### If you would like to work on data retention job
+### 4.2 If you would like to work on data retention job
 * Follow the above steps
 * Change application.properties file "webclient.url.datacatalog =" to point to datacatalog url
 * You can call DataApi::createDataRetentionJob and DataApi::scheduleDataRetentionJob to start a data retention job
 * Job code is under bd.management.task project DataRetentionJobHandler.java
 
-# 5. Workflow to create retention&maintenance jobs
+## 5. Workflow to create retention&maintenance jobs
 
-## 5.1 Access Task Web Page
+### 5.1 Access Task Web Page
 
 ```bash
 # db.management.api UI Page
 http://<IP>:8080/management/swagger-ui.html
 ```
 
-## 5.2 Run management command to create new adom (data retention&maintenance jobs are created for the new adom)
+### 5.2 Run management command to create new adom (data retention&maintenance jobs are created for the new adom)
 
 ```json
 # /v1/data/adoms
@@ -86,16 +86,16 @@ Response Body:
 
 ```
 
-# 6. Schedule retention&maintenance jobs
+## 6. Schedule retention&maintenance jobs
 
-## 6.1 Access Task Web Page
+### 6.1 Access Task Web Page
 
 ```bash
 # db.management.task UI Page
 http://<IP>:8081/task/swagger-ui.html
 ```
 
-## 6.2 Run task command to list the newly created jobs
+### 6.2 Run task command to list the newly created jobs
 Remember the jobName in the response. We will use them later.
 
 ```json
@@ -144,7 +144,7 @@ Response Body:
 
 ```
 
-## 6.3 Run schedule command to list created jobs
+### 6.3 Run schedule command to list created jobs
 With the jobName in step 6.2, we can set the param here.
 
 ```json
@@ -163,7 +163,7 @@ Response Body:
 
 ```
 
-## 6.4 Run unschedule command to list created jobs
+### 6.4 Run unschedule command to list created jobs
 Use the same jobName as that in step 6.3.
 
 ```json
