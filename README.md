@@ -1,55 +1,39 @@
-# Shcedule data retention/maintenance jobs (for dev purpose)
+# bd.management.api
 
-# 1. Prerequisite
-We need an impala&kudu&datacatalog environment with default '_data_catalog' and 'db_log_public' databases that have the latest adom table schemas and UDFs.
+## 1. Swagger UI
+http://localhost:8080/management/swagger-ui.html
 
-If you do not have the mentioned environment, we can create one through the following steps.
-## 1.1 Compile fazudf (Reference fazudf README)
-Compile this C++ program first to generate the .so lib file.
-This file will be used by data.catalog or impala docker to deploy UDFs.
+## 2. Design Doc
+https://docs.google.com/document/d/1dDbqMyjhG5sDIeDypeglHqUk9oCMSi0UuhRrmSUPiKw
 
-## 1.2 Start impala&kudu database
-Some existing docker files will deploy the fazudf .so file to hdfs for UDF installation.
-```bash
-# docker-compose-simulator_etl.yml is under 'platform/' folder
-docker-compose -f docker-compose-simulator_etl.yml up impala
-```
+## 3. Service Configuration
+https://docs.google.com/spreadsheets/d/153Cy__BD6K6toNyGmMWwkoLPahjySkcJ4EfEYuaOnRA
 
-## 1.3 Start data.catalog
-Compile first so that the udf creation script (called 'udf_fazbd_cpp.sql') is copied from the fazudf project.
-Check src/main/resources to see whether there exists a 'udf_fazbd_cpp.sql' file after compilation.
-Change 'server.port' param from '8080' to '8083' (or other ports that is free to use) in application.properties
+## 4. How to run
 
-Start data.catalog project through IDE. If this project is started successfully, you would be able to access the following link:
-http://<IP>:8083/datacatalog/swagger-ui.html
+### If you would like to work on api and task project
+* Start docker compose file: ./demo/docker-compose-minidev.yml
+* Change bd.management.task port to 8081 in application.properties file ("server.port = 8081")
+* Change application.properties file in bd.management.api project: webclient.url.bd-task = localhost:8081
+* Start bd.management.task project
+* Start bd.management.api project
 
-# 2. Start db.management.task project
+### If you would like to work on data retention job
+* Follow the above steps
+* Change application.properties file "webclient.url.datacatalog =" to point to datacatalog url
+* You can call DataApi::createDataRetentionJob and DataApi::scheduleDataRetentionJob to start a data retention job
+* Job code is under bd.management.task project DataRetentionJobHandler.java
 
-## 2.1 Modify application.properties under 'src/main/resources/'
-Chnage 'server.port' from '8080' to '8081' (or other ports that is free to use).
+# 5. Workflow to create retention&maintenance jobs
 
-## 2.2 Start db.management.task through IDE
-The APIs can be accessed through: http://<IP>:8081/task/swagger-ui.html
-
-# 3. Start db.management.api project
-
-## 3.1 Modify application.properties under 'src/main/resources/'
-Set 'webclient.url.bd-task' to '<IP>:8081' (Remember we change this port to 8081 in db.management.task)
-Set 'webclient.url.datacatalog' to '<IP>:8083' (Remember we change this port to 8083 in data.catalog setup)
-
-## 3.2 Start db.management.api through IDE
-The APIs can be accessed through: http://<IP>:8080/management/swagger-ui.html
-
-# 4. Create retention&maintenance jobs
-
-## 4.1 Access Task Web Page
+## 5.1 Access Task Web Page
 
 ```bash
 # db.management.api UI Page
 http://<IP>:8080/management/swagger-ui.html
 ```
 
-## 4.2 Run management command to create new adom (data retention&maintenance jobs are created for the new adom)
+## 5.2 Run management command to create new adom (data retention&maintenance jobs are created for the new adom)
 
 ```json
 # /v1/data/adoms
@@ -95,23 +79,23 @@ Param:
 
 Response Body:
 {
-  "result": true, // true means successfully executed
+  "result": true,
   "details": "action_queued",
   "message": ""
 }
 
 ```
 
-# 5. Schedule retention&maintenance jobs
+# 6. Schedule retention&maintenance jobs
 
-## 5.1 Access Task Web Page
+## 6.1 Access Task Web Page
 
 ```bash
 # db.management.task UI Page
 http://<IP>:8081/task/swagger-ui.html
 ```
 
-## 5.2 Run task command to list the newly created jobs
+## 6.2 Run task command to list the newly created jobs
 Remember the jobName in the response. We will use them later.
 
 ```json
@@ -160,8 +144,8 @@ Response Body:
 
 ```
 
-## 5.3 Run schedule command to list created jobs
-With the jobName in step 5.2, we can set the param here.
+## 6.3 Run schedule command to list created jobs
+With the jobName in step 6.2, we can set the param here.
 
 ```json
 # /v1/schedule
@@ -179,8 +163,8 @@ Response Body:
 
 ```
 
-## 5.4 Run unschedule command to list created jobs
-Use the same jobName as that in step 5.3.
+## 6.4 Run unschedule command to list created jobs
+Use the same jobName as that in step 6.3.
 
 ```json
 # /v1/jobs/{job_name}/unschedule
