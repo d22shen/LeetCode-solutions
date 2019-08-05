@@ -33,7 +33,8 @@ https://docs.google.com/spreadsheets/d/153Cy__BD6K6toNyGmMWwkoLPahjySkcJ4EfEYuaO
 http://localhost:8080/management/swagger-ui.html
 ```
 
-### 5.2 Run management command to create new adom (data retention&maintenance jobs are created for the new adom)
+### 5.2 Run management command to create new adom
+data retention&maintenance jobs are automatically created for the adom.
 
 ```json
 # /v1/data/adoms
